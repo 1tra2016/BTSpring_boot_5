@@ -6,6 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class StudentEnrollmentRequest {
-    private long courseId;
-    private long studentId;
+    private Long courseId;
+    private Long studentId;
 }

@@ -1,10 +1,13 @@
 package com.example.demo.controllers;
 
 import com.example.demo.DTO.CourseCreateRequest;
+import com.example.demo.DTO.CourseResponse;
 import com.example.demo.DTO.CourseUpdateRequest;
 import com.example.demo.models.Course;
 import com.example.demo.services.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,9 +26,16 @@ public class CourseController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Course>>> getAllCourses(@RequestParam(required = false) String search) {
-        List<Course> courses = courseService.getAllCourses(search);
-        return ResponseEntity.ok(ApiResponse.success("Thành công", courses));
+    public ResponseEntity<ApiResponse<Page<CourseResponse>>> getAllCourses(
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(defaultValue = "DESC") Sort.Direction direction
+) {
+        Page<CourseResponse> result =
+                courseService.getPagedCourses(page, size, sortBy, direction);
+        return ResponseEntity.ok(ApiResponse.success("Thành công", result));
     }
 
     @GetMapping("/{id}")

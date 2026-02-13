@@ -13,10 +13,10 @@ import java.util.List;
 public class Instructor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "instructor_name", length = 100, nullable = false)
-    private String instructorname;
+    private String instructorName;
 
     @Column(unique=true, nullable = false)
     private String email;

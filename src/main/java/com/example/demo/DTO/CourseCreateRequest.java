@@ -9,5 +9,5 @@ import lombok.Setter;
 public class CourseCreateRequest {
     private String title;
     private CourseStatus status;
-    private long instructorId;
+    private Long instructorId;
 }

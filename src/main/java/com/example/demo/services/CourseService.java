@@ -2,11 +2,17 @@ package com.example.demo.services;
 
 
 import com.example.demo.DTO.CourseCreateRequest;
+import com.example.demo.DTO.CourseInstructorResponse;
+import com.example.demo.DTO.CourseResponse;
 import com.example.demo.DTO.CourseUpdateRequest;
 import com.example.demo.models.Instructor;
 import com.example.demo.models.Course;
 import com.example.demo.repositories.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -23,20 +29,41 @@ public class CourseService {
         this.instructorService = instructorService;
     }
 
-    public List<Course> getAllCourses(String search) {
-        List<Course> courses = courseRepository.findAll();
-        if (search != null) {
-            courses = courses
-                    .stream()
-                    .filter(u -> u.getTitle().toLowerCase().contains(search.toLowerCase()))
-                    .toList();
+    public Page<CourseResponse> getPagedCourses(
+            int page,
+            int size,
+            String sortBy,
+            Sort.Direction direction
+    ) {
+
+        if (page < 0) {
+            page = 0;
         }
-        return courses;
+
+        if (sortBy == null || sortBy.isBlank()) {
+            sortBy = "id";
+        }
+
+        Sort sort = Sort.by(direction, sortBy);
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Course> coursePage = courseRepository.findAll(pageable);
+
+        return coursePage.map(this::mapToResponse);
     }
 
-    //public Course findById(Long id){
-    //    return courseRepository.findById(id).orElse(null);
-    //}
+    private CourseResponse mapToResponse(Course course) {
+        return new CourseResponse(
+                course.getId(),
+                course.getTitle(),
+                course.getStatus(),
+                new CourseInstructorResponse(
+                        course.getInstructor().getId(),
+                        course.getInstructor().getInstructorName()
+                )
+        );
+    }
 
     public Course getCourseById(Long id) {
         Course course = courseRepository.findById(id)

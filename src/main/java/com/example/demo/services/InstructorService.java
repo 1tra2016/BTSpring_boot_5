@@ -22,7 +22,7 @@ public class InstructorService {
         if (search != null && !search.isEmpty()) {
             instructors = instructors
                     .stream()
-                    .filter(u -> u.getInstructorname().toLowerCase().contains(search.toLowerCase()))
+                    .filter(u -> u.getInstructorName().toLowerCase().contains(search.toLowerCase()))
                     .toList();
         }
         return instructors;
@@ -34,7 +34,7 @@ public class InstructorService {
 
     public Instructor createInstructor(InstructorCreateRequest infor){
         Instructor instructor = new Instructor();
-        instructor.setInstructorname(infor.getName());
+        instructor.setInstructorName(infor.getName());
         instructor.setEmail(infor.getEmail());
         return instructorRepository.save(instructor);
     }
@@ -43,7 +43,7 @@ public class InstructorService {
         Instructor old = instructorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Course not found id: " + id));
 
-        old.setInstructorname(newInstructor.getInstructorname());
+        old.setInstructorName(newInstructor.getInstructorName());
         old.setEmail(newInstructor.getEmail());
         instructorRepository.save(old);
         return old;
