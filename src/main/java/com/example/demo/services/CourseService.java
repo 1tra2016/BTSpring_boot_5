@@ -2,20 +2,18 @@ package com.example.demo.services;
 
 
 import com.example.demo.DTO.CourseCreateRequest;
-import com.example.demo.DTO.CourseInstructorResponse;
-import com.example.demo.DTO.CourseResponse;
+import com.example.demo.response.CourseInstructorResponse;
+import com.example.demo.response.CourseResponse;
 import com.example.demo.DTO.CourseUpdateRequest;
 import com.example.demo.models.Instructor;
 import com.example.demo.models.Course;
 import com.example.demo.repositories.CourseRepository;
+import com.example.demo.response.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-
-import java.util.List;
-import java.util.NoSuchElementException;
 
 @org.springframework.stereotype.Service
 public class CourseService {
@@ -29,7 +27,7 @@ public class CourseService {
         this.instructorService = instructorService;
     }
 
-    public Page<CourseResponse> getPagedCourses(
+    public PageResponse<CourseResponse> getPagedCourses(
             int page,
             int size,
             String sortBy,
@@ -50,7 +48,16 @@ public class CourseService {
 
         Page<Course> coursePage = courseRepository.findAll(pageable);
 
-        return coursePage.map(this::mapToResponse);
+        Page<CourseResponse> dtoPage = coursePage.map(this::mapToResponse);
+
+        return new PageResponse<>(
+                dtoPage.getContent(),
+                dtoPage.getNumber(),
+                dtoPage.getSize(),
+                dtoPage.getTotalElements(),
+                dtoPage.getTotalPages(),
+                dtoPage.isLast()
+        );
     }
 
     private CourseResponse mapToResponse(Course course) {

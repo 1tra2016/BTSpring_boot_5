@@ -1,4 +1,4 @@
-package com.example.demo.DTO;
+package com.example.demo.response;
 
 import com.example.demo.enums.CourseStatus;
 import lombok.Getter;

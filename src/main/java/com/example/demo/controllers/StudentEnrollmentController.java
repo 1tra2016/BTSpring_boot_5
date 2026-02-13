@@ -2,6 +2,7 @@ package com.example.demo.controllers;
 
 import com.example.demo.DTO.StudentEnrollmentRequest;
 import com.example.demo.models.StudentEnrollment;
+import com.example.demo.response.ApiResponse;
 import com.example.demo.services.StudentEnrollmentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
