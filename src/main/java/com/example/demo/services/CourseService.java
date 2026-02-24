@@ -2,6 +2,7 @@ package com.example.demo.services;
 
 
 import com.example.demo.DTO.CourseCreateRequest;
+import com.example.demo.enums.CourseStatus;
 import com.example.demo.response.CourseInstructorResponse;
 import com.example.demo.response.CourseResponse;
 import com.example.demo.DTO.CourseUpdateRequest;
@@ -14,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+
+import java.util.List;
 
 @org.springframework.stereotype.Service
 public class CourseService {
@@ -57,6 +60,52 @@ public class CourseService {
                 dtoPage.getTotalElements(),
                 dtoPage.getTotalPages(),
                 dtoPage.isLast()
+        );
+    }
+
+    public PageResponse<CourseResponse> getPagedCoursesByStatus(
+            int page,
+            int size,
+            String sortBy,
+            Sort.Direction direction,
+            CourseStatus status
+    ) {
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(direction, sortBy)
+        );
+
+        Page<Course> coursePage =
+                courseRepository.findAllByStatus(status, pageable);
+
+        List<CourseResponse> items = coursePage.getContent()
+                .stream()
+                .map(course -> {
+
+                    CourseInstructorResponse instructorResponse =
+                            new CourseInstructorResponse(
+                                    course.getInstructor().getId(),
+                                    course.getInstructor().getInstructorName()
+                            );
+
+                    return new CourseResponse(
+                            course.getId(),
+                            course.getTitle(),
+                            course.getStatus(),
+                            instructorResponse
+                    );
+                })
+                .toList();
+
+        return new PageResponse<>(
+                items,
+                coursePage.getNumber(),
+                coursePage.getSize(),
+                coursePage.getTotalElements(),
+                coursePage.getTotalPages(),
+                coursePage.isLast()
         );
     }
 
