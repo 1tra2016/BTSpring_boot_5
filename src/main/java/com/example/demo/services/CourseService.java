@@ -9,6 +9,7 @@ import com.example.demo.DTO.CourseUpdateRequest;
 import com.example.demo.models.Instructor;
 import com.example.demo.models.Course;
 import com.example.demo.repositories.CourseRepository;
+import com.example.demo.response.CourseResponseV2;
 import com.example.demo.response.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -101,6 +102,36 @@ public class CourseService {
 
         return new PageResponse<>(
                 items,
+                coursePage.getNumber(),
+                coursePage.getSize(),
+                coursePage.getTotalElements(),
+                coursePage.getTotalPages(),
+                coursePage.isLast()
+        );
+    }
+
+    public PageResponse<CourseResponseV2> getPagedCoursesByStatusV2(
+            int page,
+            int size,
+            String sortBy,
+            Sort.Direction direction,
+            CourseStatus status
+    ) {
+
+        if (page < 0) page = 0;
+        if (sortBy == null || sortBy.isBlank()) sortBy = "id";
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(direction, sortBy)
+        );
+
+        Page<CourseResponseV2> coursePage =
+                courseRepository.findAllByStatusV2(status, pageable);
+
+        return new PageResponse<>(
+                coursePage.getContent(),
                 coursePage.getNumber(),
                 coursePage.getSize(),
                 coursePage.getTotalElements(),
